@@ -45,6 +45,11 @@ $('#joinBtn').onclick = async () => {
 
   localStream = await getMedia();
   $('#localVideo').srcObject = localStream;
+  camOn = localStream.getVideoTracks().length > 0;
+  micOn = localStream.getAudioTracks().length > 0;
+  $('#camBtn').classList.toggle('off', !camOn);
+  $('#micBtn').classList.toggle('off', !micOn);
+  $('#localVideo').classList.toggle('cam-off', !camOn);
 
   ws = new WebSocket(WS_URL);
   ws.onopen = () => send({ type: 'join', room, password, name });
@@ -79,6 +84,7 @@ function handle(m) {
         $('#remoteName').textContent = m.peers[0].name;
         startPeer(true);
         setStatus('Connect ho raha hai…');
+        shareMediaState();
       } else setStatus('Partner ka intezar…');
       break;
     case 'peer-joined':
@@ -86,6 +92,7 @@ function handle(m) {
       sysMsg(`${m.peer.name} aa gaye ❤️`);
       startPeer(false);
       setStatus('Connect ho raha hai…');
+      shareMediaState();
       // share what we're watching with the newcomer
       if (currentSource) send({ type: 'sync', action: 'load', source: currentSource });
       setTimeout(() => { const p = player(); if (p) send({ type: 'sync', action: p.paused() ? 'pause' : 'play', time: p.time() }); }, 1500);
@@ -94,6 +101,7 @@ function handle(m) {
       sysMsg('Partner chale gaye');
       closePeer();
       $('#remoteName').textContent = '';
+      showRemoteMedia({ cam: true, mic: true });
       setStatus('Partner ka intezar…');
       break;
     case 'signal': onSignal(m); break;
@@ -106,6 +114,7 @@ function handle(m) {
     case 'ready-state': showReady(m); break;
     case 'countdown': runCountdown(m.at); break;
     case 'pauseall': showPauseAlert(m.fromName); break;
+    case 'media': showRemoteMedia(m); break;
   }
 }
 
@@ -251,29 +260,82 @@ function closePeer() {
   pendingCandidates = [];
 }
 
-$('#micBtn').onclick = (e) => {
-  const tr = localStream.getAudioTracks(); if (!tr.length) return toast('Mic nahi hai');
-  tr.forEach((t) => (t.enabled = !t.enabled));
-  e.currentTarget.classList.toggle('off', !tr[0].enabled);
+/* ---------- camera / mic: really turn the device OFF (light goes off) ---------- */
+let camOn = true, micOn = true;
+
+function shareMediaState() { send({ type: 'media', cam: camOn, mic: micOn }); }
+
+// put a track (or null) on the call without restarting it
+async function attachTrack(kind, track) {
+  if (!pc) return;
+  const tr = pc.getTransceivers().find((t) => t.receiver.track && t.receiver.track.kind === kind);
+  if (!tr) { if (track) { pc.addTrack(track, localStream); await makeOffer(false); } return; }
+  await tr.sender.replaceTrack(track);
+  if (track && (tr.direction === 'recvonly' || tr.direction === 'inactive')) {
+    tr.direction = 'sendrecv';
+    await makeOffer(false);
+  }
+}
+
+async function setDevice(kind, on) {
+  if (!on) {
+    const getter = kind === 'video' ? 'getVideoTracks' : 'getAudioTracks';
+    localStream[getter]().forEach((t) => { t.stop(); localStream.removeTrack(t); });
+    await attachTrack(kind, null);
+  } else {
+    let s;
+    try {
+      s = await navigator.mediaDevices.getUserMedia(kind === 'video'
+        ? { video: { facingMode } }
+        : { audio: { echoCancellation: true, noiseSuppression: true } });
+    } catch { toast(kind === 'video' ? 'Camera nahi khula — permission check karo' : 'Mic nahi khula'); return false; }
+    const t = kind === 'video' ? s.getVideoTracks()[0] : s.getAudioTracks()[0];
+    localStream.addTrack(t);
+    await attachTrack(kind, t);
+  }
+  return true;
+}
+
+$('#camBtn').onclick = async (e) => {
+  const btn = e.currentTarget; btn.disabled = true;
+  const want = !camOn;
+  if (await setDevice('video', want) !== false) camOn = want;
+  btn.disabled = false;
+  btn.classList.toggle('off', !camOn);
+  $('#localVideo').srcObject = localStream;
+  $('#localVideo').classList.toggle('cam-off', !camOn);
+  shareMediaState();
 };
-$('#camBtn').onclick = (e) => {
-  const tr = localStream.getVideoTracks(); if (!tr.length) return toast('Camera nahi hai');
-  tr.forEach((t) => (t.enabled = !t.enabled));
-  e.currentTarget.classList.toggle('off', !tr[0].enabled);
+$('#micBtn').onclick = async (e) => {
+  const btn = e.currentTarget; btn.disabled = true;
+  const want = !micOn;
+  if (await setDevice('audio', want) !== false) micOn = want;
+  btn.disabled = false;
+  btn.classList.toggle('off', !micOn);
+  btn.textContent = micOn ? '🎤' : '🔇';
+  shareMediaState();
 };
 $('#flipBtn').onclick = async () => {
-  const old = localStream.getVideoTracks()[0]; if (!old) return toast('Camera nahi hai');
+  if (!camOn) return toast('Pehle camera on karo');
+  const old = localStream.getVideoTracks()[0];
   facingMode = facingMode === 'user' ? 'environment' : 'user';
   try {
     const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
     const nt = s.getVideoTracks()[0];
-    nt.enabled = old.enabled;
-    const sender = pc?.getSenders().find((x) => x.track && x.track.kind === 'video');
-    if (sender) await sender.replaceTrack(nt);
-    localStream.removeTrack(old); old.stop(); localStream.addTrack(nt);
+    if (old) { localStream.removeTrack(old); old.stop(); }
+    localStream.addTrack(nt);
+    await attachTrack('video', nt);
     $('#localVideo').srcObject = localStream;
+    $('#localVideo').style.transform = facingMode === 'user' ? 'scaleX(-1)' : 'none';
   } catch { toast('Doosra camera nahi mila'); facingMode = 'user'; }
 };
+
+function showRemoteMedia(m) {
+  $('#remoteOff').classList.toggle('hidden', m.cam !== false);
+  $('#remoteAvatar').textContent = (m.fromName || '?').trim().charAt(0).toUpperCase();
+  $('#remoteOffName').textContent = m.fromName || '';
+  $('#remoteMic').classList.toggle('hidden', m.mic !== false);
+}
 $('#pipBtn').onclick = async () => {
   const v = $('#remoteVideo');
   try {

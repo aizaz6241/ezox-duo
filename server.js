@@ -100,7 +100,7 @@ wss.on('connection', (ws) => {
       return;
     }
 
-    if (['signal', 'chat', 'sync', 'typing', 'pauseall'].includes(m.type)) {
+    if (['signal', 'chat', 'sync', 'typing', 'pauseall', 'media'].includes(m.type)) {
       othersIn(ws).forEach((c) => send(c, { ...m, from: ws.id, fromName: ws.name }));
     }
   });

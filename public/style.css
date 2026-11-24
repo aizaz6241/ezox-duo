@@ -101,3 +101,12 @@ h1 span, .brand span { background: linear-gradient(135deg, var(--accent), var(--
 .countdown .big { color: #fff; font-size: 18px; text-align: center; padding: 0 20px; }
 .countdown.alert { background: #3b0a12ee; }
 .countdown.alert div { font-size: 90px; }
+
+/* camera / mic off */
+.remote-off { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  padding-bottom: 56px; background: radial-gradient(circle at 50% 35%, #2a1638, #120f1a); color: var(--muted); font-size: 13px; }
+.remote-off #remoteOffName { color: var(--text); font-weight: 600; }
+.avatar { width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; font-size: 32px; font-weight: 700; color: #fff;
+  background: linear-gradient(135deg, var(--accent), var(--accent2)); }
+.remote-mic { position: absolute; left: 10px; bottom: 60px; background: #e5484dcc; padding: 4px 8px; border-radius: 8px; font-size: 14px; }
+#localVideo.cam-off { visibility: hidden; }
