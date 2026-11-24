@@ -1,5 +1,7 @@
 # EZOX Duo — sirf hum dono ka private room
 
+**Live:** https://ezox-duo.onrender.com (Render, Singapore server — GitHub par push karte hi khud update hota hai)
+
 Aap dono ke liye apna app: **video call + voice + chat + movie saath dekhna**.
 Room mein sirf **2 log** aa sakte hain, password ke saath. Koi chat ya call save nahi hoti.
 
