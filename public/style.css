@@ -110,3 +110,17 @@ h1 span, .brand span { background: linear-gradient(135deg, var(--accent), var(--
   background: linear-gradient(135deg, var(--accent), var(--accent2)); }
 .remote-mic { position: absolute; left: 10px; bottom: 60px; background: #e5484dcc; padding: 4px 8px; border-radius: 8px; font-size: 14px; }
 #localVideo.cam-off { visibility: hidden; }
+
+/* Inside the Android app: movie is on top (native), here only call + chat side by side */
+.inapp .top { padding: 6px 10px; font-size: 13px; }
+.inapp .player-col { display: none; }
+.inapp .layout { grid-template-columns: 1fr; padding: 6px; gap: 6px; overflow: hidden; }
+.inapp .side { flex-direction: row; gap: 6px; height: 100%; }
+.inapp .call { aspect-ratio: auto; flex: 0 0 42%; height: 100%; }
+.inapp .chat { flex: 1; min-height: 0; }
+.inapp .controls { gap: 4px; bottom: 6px; flex-wrap: wrap; }
+.inapp .controls button { padding: 6px 8px; font-size: 13px; }
+.inapp #pipBtn { display: none; }
+.inapp .msg { font-size: 13px; }
+.inapp .join { padding: 10px; }
+.inapp .card { padding: 18px; gap: 10px; }

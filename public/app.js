@@ -4,7 +4,9 @@ const $ = (s) => document.querySelector(s);
 let ws, myId, pc, localStream, iceServers = [];
 let isOfferer = false, pendingCandidates = [];
 let remoteStream = new MediaStream();
-let roomName = '';
+let roomName = '', roomPass = '', myName = '';
+const IN_APP = /EZOXDuoApp/.test(navigator.userAgent) && !!window.DuoNative;
+if (IN_APP) document.body.classList.add('inapp');
 let facingMode = 'user';
 
 // player state
@@ -37,7 +39,7 @@ $('#joinBtn').onclick = async () => {
   const password = $('#password').value;
   if (!room || password.length < 4) return toast('Room naam aur 4+ character password do');
   store('duo_name', name); store('duo_room', room);
-  roomName = room;
+  roomName = room; roomPass = password; myName = name;
   $('#joinBtn').disabled = true;
 
   try { iceServers = (await (await fetch(SERVER + '/config')).json()).iceServers; }
@@ -78,6 +80,7 @@ function handle(m) {
       $('#join').classList.add('hidden');
       $('#main').classList.remove('hidden');
       $('#roomLabel').textContent = roomName;
+      if (IN_APP) { try { window.DuoNative.joined(roomName.toLowerCase(), roomPass, myName); } catch {} }
       if (m.state) pendingState = { ...m.state };
       if (m.source) loadSource(m.source, false);
       if (m.peers.length) {
@@ -344,6 +347,7 @@ $('#pipBtn').onclick = async () => {
   } catch { toast('Yeh browser chhoti window support nahi karta'); }
 };
 $('#leaveBtn').onclick = () => {
+  if (IN_APP) { try { window.DuoNative.left(); } catch {} }
   closePeer(); localStream?.getTracks().forEach((t) => t.stop()); ws?.close(); location.reload();
 };
 
