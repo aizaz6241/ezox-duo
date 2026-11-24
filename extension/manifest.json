@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "EZOX Duo – Movie Sync",
+  "version": "1.1.0",
+  "description": "Netflix, Prime Video, Hotstar aur YouTube partner ke saath sync karke dekho.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.netflix.com/*",
+    "https://www.primevideo.com/*",
+    "https://www.amazon.com/*",
+    "https://www.amazon.co.uk/*",
+    "https://www.amazon.ae/*",
+    "https://www.hotstar.com/*",
+    "https://www.youtube.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "EZOX Duo"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.netflix.com/*",
+        "https://www.primevideo.com/*",
+        "https://www.amazon.com/*",
+        "https://www.amazon.co.uk/*",
+        "https://www.amazon.ae/*",
+        "https://www.hotstar.com/*",
+        "https://www.youtube.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.netflix.com/*"
+      ],
+      "js": [
+        "inject.js"
+      ],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    }
+  ]
+}

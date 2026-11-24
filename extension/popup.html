@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body { width: 280px; margin: 0; padding: 16px; font: 13px system-ui; background: #17141f; color: #f2eef8; }
+    h3 { margin: 0 0 10px; }
+    label { display: block; margin: 8px 0 4px; color: #9a92ab; }
+    input[type=text], input[type=password] { width: 100%; box-sizing: border-box; padding: 8px; border-radius: 8px; border: 1px solid #2f2840; background: #0f0c16; color: #fff; }
+    .row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+    button { margin-top: 12px; width: 100%; padding: 10px; border: 0; border-radius: 8px; font-weight: 600; color: #fff; cursor: pointer; background: linear-gradient(135deg,#e8457c,#8a5cf6); }
+    #msg { margin-top: 8px; color: #46d17b; min-height: 16px; }
+  </style>
+</head>
+<body>
+  <h3>EZOX Duo · Movie Sync</h3><div style="color:#9a92ab">Netflix · Prime Video · Hotstar · YouTube</div>
+  <label>Server link</label><input id="server" type="text" placeholder="https://your-app.onrender.com" />
+  <label>Aapka naam</label><input id="name" type="text" />
+  <label>Room ka naam</label><input id="room" type="text" />
+  <label>Password</label><input id="password" type="password" />
+  <div class="row"><input id="enabled" type="checkbox" /> <span>Sync ON</span></div>
+  <button id="save">Save</button>
+  <div id="msg"></div>
+  <script src="popup.js"></script>
+</body>
+</html>

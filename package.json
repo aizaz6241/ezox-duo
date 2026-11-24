@@ -1,0 +1,16 @@
+{
+  "name": "ezox-duo",
+  "version": "1.0.0",
+  "description": "Private watch-together app for 2 people: video call, voice, chat and synced movies",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.17.1"
+  }
+}

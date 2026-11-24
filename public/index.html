@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>EZOX Duo — Sirf hum dono</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <meta name="theme-color" content="#0d0b14" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Duo" />
+</head>
+<body>
+  <!-- JOIN SCREEN -->
+  <section id="join" class="join">
+    <div class="card">
+      <h1>EZOX <span>Duo</span></h1>
+      <p class="sub">Private room — sirf aap dono. Kuch bhi save nahi hota.</p>
+      <label>Aapka naam<input id="name" maxlength="30" placeholder="e.g. Aizaz" /></label>
+      <label>Room ka naam<input id="room" maxlength="40" placeholder="e.g. hamara-room" /></label>
+      <label>Password<input id="password" type="password" placeholder="kam az kam 4 character" /></label>
+      <button id="joinBtn" class="primary">Room mein jao</button>
+      <p class="hint">Dono same room naam aur same password daalein.</p>
+    </div>
+  </section>
+
+  <!-- MAIN SCREEN -->
+  <section id="main" class="main hidden">
+    <header class="top">
+      <div class="brand">EZOX <span>Duo</span> · <b id="roomLabel"></b></div>
+      <div id="status" class="status">Partner ka intezar…</div>
+    </header>
+
+    <div class="layout">
+      <!-- PLAYER -->
+      <div class="player-col">
+        <div class="source-bar">
+          <input id="urlInput" placeholder="YouTube link ya video (.mp4) link paste karo" />
+          <button id="loadBtn">Chalao</button>
+          <label class="filebtn">Apni file<input id="fileInput" type="file" accept="video/*" hidden /></label>
+          <button id="netflixBtn" class="nf">🎬 Netflix / Prime</button>
+        </div>
+        <div id="player" class="player">
+          <div class="empty">Upar link daalo ya apni video file chuno.<br />Play / pause / aage-peeche dono taraf ek saath hoga.</div>
+        </div>
+      </div>
+
+      <!-- CALL + CHAT -->
+      <aside class="side">
+        <div class="call">
+          <video id="remoteVideo" autoplay playsinline></video>
+          <div id="remoteName" class="remote-name"></div>
+          <video id="localVideo" autoplay playsinline muted></video>
+          <div class="controls">
+            <button id="micBtn" title="Mic">🎤</button>
+            <button id="camBtn" title="Camera">📷</button>
+            <button id="flipBtn" title="Camera badlo">🔄</button>
+            <button id="pipBtn" title="Chhoti window (Netflix dekhte waqt)">🪟</button>
+            <button id="leaveBtn" class="danger" title="Nikal jao">✖</button>
+          </div>
+        </div>
+        <div class="chat">
+          <div id="messages" class="messages"></div>
+          <div id="typing" class="typing"></div>
+          <form id="chatForm" class="chat-form">
+            <input id="chatInput" maxlength="2000" placeholder="Message likho…" autocomplete="off" />
+            <button>➤</button>
+          </form>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- NETFLIX / PRIME SYNC -->
+  <div id="nfModal" class="modal hidden">
+    <div class="card wide">
+      <h2>🎬 Netflix / Prime / Hotstar saath</h2>
+
+      <div class="tabs">
+        <button id="tabPhone" class="tab active">📱 Phone par</button>
+        <button id="tabLaptop" class="tab">💻 Laptop par</button>
+      </div>
+
+      <div id="panePhone">
+        <ol>
+          <li>Dono apni Netflix / Prime app mein <b>same movie</b> kholo.</li>
+          <li>Neeche time likho, aur dono movie ko <b>isi time par rok do</b>.</li>
+          <li>Dono <b>Ready</b> dabao — dono ready hote hi ek saath 3-2-1 aayega, <b>PLAY</b> par play daba do.</li>
+        </ol>
+        <label class="lbl">Kis time par roko? (jaise 0:00 ya 45:10)
+          <input id="atInput" placeholder="0:00" maxlength="10" inputmode="numeric" />
+        </label>
+        <div id="atShow" class="at-show hidden"></div>
+        <div id="people" class="people"></div>
+        <div class="row-btns">
+          <button id="readyBtn" class="primary">✅ Main ready hoon</button>
+          <button id="pauseAllBtn" class="danger">⏸ Dono pause</button>
+        </div>
+        <p class="hint">Beech mein rokna ho to "Dono pause" dabao — partner ke phone par bara alert aayega. Wapas chalane ke liye dobara time likh kar dono Ready dabao.</p>
+      </div>
+
+      <div id="paneLaptop" class="hidden">
+        <p>Laptop par sab khud sync hota hai — play, pause, aage-peeche. <b>Netflix, Prime Video, Hotstar aur YouTube</b> sab par.</p>
+        <ol>
+          <li>Chrome mein hamara extension install karo (README mein tareeqa hai).</li>
+          <li>Extension mein yehi server link, room naam aur password daalo.</li>
+          <li>Site par same movie kholo — "EZOX Duo · Connected ✓" aayega.</li>
+          <li>🪟 button se call chhoti window bana lo taake movie ke upar ek doosre ko dekh sako.</li>
+        </ol>
+        <p class="hint">Netflix par agar partner doosri movie par ho to extension khud wohi movie khol deta hai.</p>
+      </div>
+
+      <button id="nfClose">Band karo</button>
+    </div>
+  </div>
+
+  <div id="pauseAlert" class="countdown alert hidden">
+    <div>⏸</div><p id="pauseText" class="big"></p>
+    <button id="pauseOk" class="primary">Theek hai, pause kar diya</button>
+  </div>
+
+  <div id="countdown" class="countdown hidden"><div id="countNum"></div><p id="countText" class="big">Tayyar raho…</p></div>
+
+  <div id="toast" class="toast"></div>
+  <script src="server-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
